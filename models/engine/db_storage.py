@@ -10,12 +10,17 @@ from models.place import Place
 from models.review import Review
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
-from sqlalchemy.orm.session import sessionmaker, Session
+from sqlalchemy.orm.session import sessionmaker
 from os import getenv
 
-all_classes = {'State': State, 'City': City,
-               'User': User, 'Place': Place,
-               'Review': Review, 'Amenity': Amenity}
+all_classes = {
+    'State': State,
+    'City': City,
+    'User': User,
+    'Place': Place,
+    'Review': Review,
+    'Amenity': Amenity
+}
 
 
 class DBStorage:
@@ -52,12 +57,12 @@ class DBStorage:
             for row in self.__session.query(cls).all():
                 # populate dict with objects from storage
                 obj_dict.update({'{}.{}'.
-                                format(type(cls).__name__, row.id,): row})
+                                 format(cls.__name__, row.id): row})
         else:
-            for key, val in all_classes.items():
-                for row in self.__session.query(val):
+            for cls_name, cls in all_classes.items():
+                for row in self.__session.query(cls):
                     obj_dict.update({'{}.{}'.
-                                    format(type(row).__name__, row.id,): row})
+                                     format(cls_name, row.id): row})
         return obj_dict
 
     def new(self, obj):
@@ -75,11 +80,11 @@ class DBStorage:
         """
         if obj:
             # determine class from obj
-            cls_name = all_classes[type(obj).__name__]
+            cls_name = type(obj).__name__
 
             # query class table and delete
-            self.__session.query(cls_name).\
-                filter(cls_name.id == obj.id).delete()
+            self.__session.query(all_classes[cls_name]).\
+                filter(all_classes[cls_name].id == obj.id).delete()
 
     def reload(self):
         """Create database session
@@ -89,7 +94,7 @@ class DBStorage:
         # create db tables
         session = sessionmaker(bind=self.__engine,
                                expire_on_commit=False)
-        # previousy:
+        # previously:
         # Session = scoped_session(session)
         self.__session = scoped_session(session)
 
