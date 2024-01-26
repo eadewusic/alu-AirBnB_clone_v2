@@ -61,13 +61,13 @@ class TestHBNBCommand(unittest.TestCase):
 
     @patch('sys.stdin', StringIO('create BaseModel\n'
                                  'update BaseModel 0000-0000-0000-0000\n'
-                                 'name "New Name"\n'
+                                 'name NewName\n'
                                  'show BaseModel 0000-0000-0000-0000\n'
                                  'EOF\n'))
     def test_update(self):
         """Test the update command."""
         self.console.cmdloop()
-        self.assertIn('New Name', self.mock_stdout.getvalue())
+        self.assertIn('NewName', self.mock_stdout.getvalue())
 
     @patch('sys.stdin', StringIO('\n'))
     def test_emptyline(self):
