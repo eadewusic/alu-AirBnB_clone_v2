@@ -36,13 +36,19 @@ class TestHBNBCommand(unittest.TestCase):
 
     def test_show(self):
         """Test the show command."""
-        with patch('sys.stdin', StringIO('create BaseModel\nshow BaseModel 0000-0000-0000-0000\nEOF\n')):
+        with patch('sys.stdin', StringIO('create BaseModel\n'
+                                         'show BaseModel 0000-0000-0000-0000\n'
+                                         'EOF\n')):
             self.console.cmdloop()
         self.assertIn('BaseModel', self.mock_stdout.getvalue())
 
     def test_destroy(self):
         """Test the destroy command."""
-        with patch('sys.stdin', StringIO('create BaseModel\ndestroy BaseModel 0000-0000-0000-0000\nall\nEOF\n')):
+        with patch('sys.stdin', StringIO('create BaseModel\n'
+                                         'destroy BaseModel '
+                                         '0000-0000-0000-0000\n'
+                                         'all\n'
+                                         'EOF\n')):
             self.console.cmdloop()
         self.assertNotIn('BaseModel', self.mock_stdout.getvalue())
 
@@ -54,13 +60,20 @@ class TestHBNBCommand(unittest.TestCase):
 
     def test_count(self):
         """Test the count command."""
-        with patch('sys.stdin', StringIO('create BaseModel\ncount BaseModel\nEOF\n')):
+        with patch('sys.stdin', StringIO('create BaseModel\n'
+                                         'count BaseModel\n'
+                                         'EOF\n')):
             self.console.cmdloop()
         self.assertIn('1', self.mock_stdout.getvalue())
 
     def test_update(self):
         """Test the update command."""
-        with patch('sys.stdin', StringIO('create BaseModel\nupdate BaseModel 0000-0000-0000-0000 name "New Name"\nshow BaseModel 0000-0000-0000-0000\nEOF\n')):
+        with patch('sys.stdin', StringIO('create BaseModel\n'
+                                         'update BaseModel '
+                                         '0000-0000-0000-0000\n'
+                                         'name "New Name"\n'
+                                         'show BaseModel 0000-0000-0000-0000\n'
+                                         'EOF\n')):
             self.console.cmdloop()
         self.assertIn('New Name', self.mock_stdout.getvalue())
 
@@ -69,6 +82,7 @@ class TestHBNBCommand(unittest.TestCase):
         with patch('sys.stdin', StringIO('\n')):
             self.console.cmdloop()
         self.assertEqual(self.mock_stdout.getvalue(), '')
+
 
 if __name__ == '__main__':
     unittest.main()
