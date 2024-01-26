@@ -46,7 +46,7 @@ class test_fileStorage(unittest.TestCase):
         new = BaseModel()
         self.assertFalse(os.path.exists('file.json'))
 
-    def test_empty(self):
+    def test_empty_file(self):
         """ Data is saved to file """
         new = BaseModel()
         thing = new.to_dict()
@@ -54,7 +54,7 @@ class test_fileStorage(unittest.TestCase):
         new2 = BaseModel(**thing)
         self.assertNotEqual(os.path.getsize('file.json'), 0)
 
-    def test_save(self):
+    def test_save_method(self):
         """ FileStorage save method """
         new = BaseModel()
         storage.save()
