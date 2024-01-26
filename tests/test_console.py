@@ -60,8 +60,8 @@ class TestHBNBCommand(unittest.TestCase):
         self.assertNotIn('BaseModel', self.mock_stdout.getvalue())
 
     @patch('sys.stdin', StringIO('create BaseModel\n'
-                                 'update BaseModel 0000-0000-0000-0000\n'
-                                 'name NewName\n'
+                                 'update BaseModel 0000-0000-0000-0000 '
+                                 'name "NewName"\n'
                                  'show BaseModel 0000-0000-0000-0000\n'
                                  'EOF\n'))
     def test_update(self):
