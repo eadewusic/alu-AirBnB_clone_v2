@@ -140,8 +140,5 @@ class TestHBNBCommand(unittest.TestCase):
             self.assertIn("'number_rooms': 4", output)
             self.assertIn("'latitude': 37.77", output)
             self.assertIn("'longitude': 43.434", output)
-
-
 if __name__ == "__main__":
-    unittest.main()
-    
+    unittest.main()  
