@@ -1,80 +1,148 @@
+#!/usr/bin/python3
+"""Defines unittests for console.py."""
+import os
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from io import StringIO
 from console import HBNBCommand
-from models import storage
+from models.engine.file_storage import FileStorage
 
 
 class TestHBNBCommand(unittest.TestCase):
+    """Unittests for testing the HBNB command interpreter."""
+
+    @classmethod
+    def setUpClass(cls):
+        """HBNBCommand testing setup.
+
+        Temporarily rename any existing file.json.
+        Reset FileStorage objects dictionary.
+        Create an instance of the command interpreter.
+        """
+        try:
+            os.rename("file.json", "tmp")
+        except IOError:
+            pass
+        # Create an instance of the HBNBCommand class. This allows the test
+        # methods within the class to access and use this instance during the
+        # testing process.
+        cls.HBNB = HBNBCommand()
+
+    @classmethod
+    def tearDownClass(cls):
+        """HBNBCommand testing teardown.
+
+        Restore original file.json.
+        Delete the test HBNBCommand instance.
+        """
+        try:
+            os.rename("tmp", "file.json")
+        except IOError:
+            pass
+        del cls.HBNB
+
     def setUp(self):
-        """Set up the HBNBCommand instance for testing."""
-        self.console = HBNBCommand()
-        self.patcher = patch('sys.stdout', new_callable=StringIO)
-        self.mock_stdout = self.patcher.start()
+        """Reset FileStorage objects dictionary."""
+        FileStorage._FileStorage__objects = {}
 
     def tearDown(self):
-        """Tear down after testing."""
-        self.patcher.stop()
+        """Delete any created file.json."""
+        try:
+            os.remove("file.json")
+        except IOError:
+            pass
 
-    @patch('sys.stdin', StringIO('quit\n'))
-    def test_quit(self):
-        """Test the quit command."""
-        with self.assertRaises(SystemExit):
-            self.console.cmdloop()
-        self.assertEqual(self.mock_stdout.getvalue(), '')
+    def test_create_for_errors(self):
+        """Test create command errors."""
+        # Test if class name is missing
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("create")
+            self.assertEqual(
+                "** class name missing **\n", f.getvalue())
+        # Test if class doesn't exist
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("create asdfsfsd")
+            self.assertEqual(
+                "** class doesn't exist **\n", f.getvalue())
 
-    @patch('sys.stdin', StringIO('EOF\n'))
-    def test_EOF(self):
-        """Test the EOF command."""
-        with self.assertRaises(SystemExit):
-            self.console.cmdloop()
-        self.assertEqual(self.mock_stdout.getvalue(), '\n')
+    def test_create_command_validity(self):
+        """Test create command."""
+        # Create BaseModel instance and capture its ID
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("create BaseModel")
+            bm = f.getvalue().strip()
 
-    @patch('sys.stdin', StringIO('create BaseModel\nall\nEOF\n'))
-    def test_all(self):
-        """Test the all command."""
-        self.console.cmdloop()
-        self.assertIn('BaseModel', self.mock_stdout.getvalue())
+        # Create User instance and capture its ID
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("create User")
+            us = f.getvalue().strip()
 
-    @patch('sys.stdin', StringIO('create BaseModel\ncount BaseModel\nEOF\n'))
-    def test_count(self):
-        """Test the count command."""
-        self.console.cmdloop()
-        self.assertIn('1', self.mock_stdout.getvalue())
+        # Create State instance and capture its ID
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("create State")
+            st = f.getvalue().strip()
 
-    @patch('sys.stdin', StringIO('create BaseModel\n'
-                                 'show BaseModel 0000-0000-0000-0000\n'
-                                 'EOF\n'))
-    def test_show(self):
-        """Test the show command."""
-        self.console.cmdloop()
-        self.assertIn('BaseModel', self.mock_stdout.getvalue())
+        # Create Place instance and capture its ID
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("create Place")
+            pl = f.getvalue().strip()
 
-    @patch('sys.stdin', StringIO('create BaseModel\n'
-                                 'destroy BaseModel 0000-0000-0000-0000\n'
-                                 'all\n'
-                                 'EOF\n'))
-    def test_destroy(self):
-        """Test the destroy command."""
-        self.console.cmdloop()
-        self.assertNotIn('BaseModel', self.mock_stdout.getvalue())
+        # Create City instance and capture its ID
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("create City")
+            ct = f.getvalue().strip()
 
-    @patch('sys.stdin', StringIO('create BaseModel\n'
-                                 'update BaseModel 0000-0000-0000-0000 '
-                                 'name "NewName"\n'
-                                 'show BaseModel 0000-0000-0000-0000\n'
-                                 'EOF\n'))
-    def test_update(self):
-        """Test the update command."""
-        self.console.cmdloop()
-        self.assertIn('NewName', self.mock_stdout.getvalue())
+        # Create Review instance and capture its ID
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("create Review")
+            rv = f.getvalue().strip()
 
-    @patch('sys.stdin', StringIO('\n'))
-    def test_emptyline(self):
-        """Test the emptyline method."""
-        self.console.cmdloop()
-        self.assertEqual(self.mock_stdout.getvalue(), '')
+        # Create Amenity instance and capture its ID
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("create Amenity")
+            am = f.getvalue().strip()
+        # Test if the created instances are in the output of "all" command
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("all BaseModel")
+            self.assertIn(bm, f.getvalue())
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("all User")
+            self.assertIn(us, f.getvalue())
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("all State")
+            self.assertIn(st, f.getvalue())
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("all Place")
+            self.assertIn(pl, f.getvalue())
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("all City")
+            self.assertIn(ct, f.getvalue())
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("all Review")
+            self.assertIn(rv, f.getvalue())
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("all Amenity")
+            self.assertIn(am, f.getvalue())
+
+    def test_create_command_with_kwargs(self):
+        """Test create command with kwargs."""
+        # Test create command with additional key-value pairs
+        with patch("sys.stdout", new=StringIO()) as f:
+            call = (f'create Place city_id="0001" name="My_house" number_rooms=4 latitude=37.77 longitude=43.434')  # noqa
+            self.HBNB.onecmd(call)
+            pl = f.getvalue().strip()
+         # Test if the created instance and kwargs are in the
+         #    output of "all" command
+        with patch("sys.stdout", new=StringIO()) as f:
+            self.HBNB.onecmd("all Place")
+            output = f.getvalue()
+            self.assertIn(pl, output)
+            self.assertIn("'city_id': '0001'", output)
+            self.assertIn("'name': 'My house'", output)
+            self.assertIn("'number_rooms': 4", output)
+            self.assertIn("'latitude': 37.77", output)
+            self.assertIn("'longitude': 43.434", output)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
