@@ -146,12 +146,11 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
         except NameError:
             print("** class doesn't exist **")
-
-
-    def help_create(self):
-        """ Help information for the create method """
-        print("Creates a class of any type")
-        print("[Usage]: create <className>\n")
+            
+            def help_create(self):
+                """ Help information for the create method """
+                print("Creates a class of any type")
+                print("[Usage]: create <className>\n")
 
     def do_show(self, args):
         """ Method to show an individual object """
