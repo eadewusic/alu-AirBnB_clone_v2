@@ -1,0 +1,1 @@
+CREATE DATABASE hbnb_test_db
