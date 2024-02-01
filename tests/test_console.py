@@ -21,14 +21,14 @@ class TestHBNBCommand(unittest.TestCase):
         """Test the quit command."""
         with self.assertRaises(SystemExit):
             self.console.cmdloop()
-        self.assertEqual(self.mock_stdout.getvalue(), '')
+        self.assertEqual(self.mock_stdout.getvalue(), '(hbnb) ')
 
     @patch('sys.stdin', StringIO('EOF\n'))
     def test_EOF(self):
         """Test the EOF command."""
         with self.assertRaises(SystemExit):
             self.console.cmdloop()
-        self.assertEqual(self.mock_stdout.getvalue(), '\n')
+        self.assertEqual(self.mock_stdout.getvalue(), '(hbnb) \n')
 
     @patch('sys.stdin', StringIO('create BaseModel\nall\nEOF\n'))
     def test_all(self):
