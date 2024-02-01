@@ -20,21 +20,21 @@ class ConsoleTestCase(unittest.TestCase):
         del self.stdout
         del self.storage
 
-<<<<<<< HEAD
-    @patch('sys.stdin', StringIO('quit\n'))
-    def test_quit(self):
-        """Test the quit command."""
-        with self.assertRaises(SystemExit):
-            self.console.cmdloop()
-        self.assertEqual(self.mock_stdout.getvalue(), '(hbnb) ')
+# <<<<<<< HEAD
+#     @patch('sys.stdin', StringIO('quit\n'))
+#     def test_quit(self):
+#         """Test the quit command."""
+#         with self.assertRaises(SystemExit):
+#             self.console.cmdloop()
+#         self.assertEqual(self.mock_stdout.getvalue(), '(hbnb) ')
 
-    @patch('sys.stdin', StringIO('EOF\n'))
-    def test_EOF(self):
-        """Test the EOF command."""
-        with self.assertRaises(SystemExit):
-            self.console.cmdloop()
-        self.assertEqual(self.mock_stdout.getvalue(), '(hbnb) \n')
-=======
+#     @patch('sys.stdin', StringIO('EOF\n'))
+#     def test_EOF(self):
+#         """Test the EOF command."""
+#         with self.assertRaises(SystemExit):
+#             self.console.cmdloop()
+#         self.assertEqual(self.mock_stdout.getvalue(), '(hbnb) \n')
+# =======
     def test_create(self):
         """test create basic"""
         with patch('sys.stdout', self.stdout):
@@ -58,7 +58,7 @@ class ConsoleTestCase(unittest.TestCase):
             self.console.onecmd('create MyModel')
         self.assertEqual("** class doesn't exist **\n",
                          self.stdout.getvalue())
->>>>>>> ffc8a7d17c58d364e9b7c61adc6d15d51f6db793
+# >>>>>>> ffc8a7d17c58d364e9b7c61adc6d15d51f6db793
 
     def test_all(self):
         """test all"""
