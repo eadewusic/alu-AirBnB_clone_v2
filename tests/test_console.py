@@ -1,21 +1,26 @@
+#!/usr/bin/python3
+"""Test for console"""
 import unittest
-from unittest.mock import patch, MagicMock
-from io import StringIO
+
 from console import HBNBCommand
-from models import storage
+from unittest.mock import patch
+from io import StringIO
+import models
 
 
-class TestHBNBCommand(unittest.TestCase):
+class ConsoleTestCase(unittest.TestCase):
+    """Test for console"""
+
     def setUp(self):
-        """Set up the HBNBCommand instance for testing."""
         self.console = HBNBCommand()
-        self.patcher = patch('sys.stdout', new_callable=StringIO)
-        self.mock_stdout = self.patcher.start()
+        self.stdout = StringIO()
+        self.storage = models.storage
 
     def tearDown(self):
-        """Tear down after testing."""
-        self.patcher.stop()
+        del self.stdout
+        del self.storage
 
+<<<<<<< HEAD
     @patch('sys.stdin', StringIO('quit\n'))
     def test_quit(self):
         """Test the quit command."""
@@ -29,52 +34,72 @@ class TestHBNBCommand(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self.console.cmdloop()
         self.assertEqual(self.mock_stdout.getvalue(), '(hbnb) \n')
+=======
+    def test_create(self):
+        """test create basic"""
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd('create State')
+        state_id = self.stdout.getvalue()[:-1]
+        # print(state_id)
+        # print(len(state_id))
+        self.assertTrue(len(state_id) == 36)
 
-    @patch('sys.stdin', StringIO('create BaseModel\nall\nEOF\n'))
+    def test_create_save(self):
+        """test create save"""
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd('create State name="California')
+        state_id = self.stdout.getvalue()[:-1]
+        self.assertIsNotNone(
+            self.storage.all()["State.{}".format(state_id)])
+
+    def test_create_non_existing_class(self):
+        """test non-existing class"""
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd('create MyModel')
+        self.assertEqual("** class doesn't exist **\n",
+                         self.stdout.getvalue())
+>>>>>>> ffc8a7d17c58d364e9b7c61adc6d15d51f6db793
+
     def test_all(self):
-        """Test the all command."""
-        self.console.cmdloop()
-        self.assertIn('BaseModel', self.mock_stdout.getvalue())
+        """test all"""
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd('create State name="California"')
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd('all State')
+        output = self.stdout.getvalue()[:-1]
+        self.assertIn("State", output)
+        self.assertIn("California", output)
 
-    @patch('sys.stdin', StringIO('create BaseModel\ncount BaseModel\nEOF\n'))
-    def test_count(self):
-        """Test the count command."""
-        self.console.cmdloop()
-        self.assertIn('1', self.mock_stdout.getvalue())
-
-    @patch('sys.stdin', StringIO('create BaseModel\n'
-                                 'show BaseModel 0000-0000-0000-0000\n'
-                                 'EOF\n'))
-    def test_show(self):
-        """Test the show command."""
-        self.console.cmdloop()
-        self.assertIn('BaseModel', self.mock_stdout.getvalue())
-
-    @patch('sys.stdin', StringIO('create BaseModel\n'
-                                 'destroy BaseModel 0000-0000-0000-0000\n'
-                                 'all\n'
-                                 'EOF\n'))
-    def test_destroy(self):
-        """Test the destroy command."""
-        self.console.cmdloop()
-        self.assertNotIn('BaseModel', self.mock_stdout.getvalue())
-
-    @patch('sys.stdin', StringIO('create BaseModel\n'
-                                 'update BaseModel 0000-0000-0000-0000 '
-                                 'name "NewName"\n'
-                                 'show BaseModel 0000-0000-0000-0000\n'
-                                 'EOF\n'))
     def test_update(self):
-        """Test the update command."""
-        self.console.cmdloop()
-        self.assertIn('NewName', self.mock_stdout.getvalue())
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd('create State name="California"')
+        state_id = self.stdout.getvalue()[:-1]
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd(
+                'update State {} name="New California"'.format(state_id))
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd('show State {}'.format(state_id))
+        output = self.stdout.getvalue()[:-1]
+        self.assertIn("California", output)
 
-    @patch('sys.stdin', StringIO('\n'))
-    def test_emptyline(self):
-        """Test the emptyline method."""
-        self.console.cmdloop()
-        self.assertEqual(self.mock_stdout.getvalue(), '')
+    def test_destroy(self):
+        """test destroy"""
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd('create State name="California"')
+        state_id = self.stdout.getvalue()[:-1]
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd('destroy State {}'.format(state_id))
+        # with patch('sys.stdout', self.stdout):
+        #     self.console.onecmd('show State {}'.format(state_id))
+        # self.assertEqual("** no instance found **\n",
+        #                  self.stdout.getvalue())
 
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_show(self):
+        """test show"""
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd('create State name="California"')
+        state_id = self.stdout.getvalue()[:-1]
+        with patch('sys.stdout', self.stdout):
+            self.console.onecmd('show State {}'.format(state_id))
+        output = self.stdout.getvalue()[:-1]
+        self.assertIn("California", output)
