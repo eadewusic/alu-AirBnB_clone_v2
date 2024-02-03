@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Unit Test for BaseModel Class
+UnitTest for BaseModel Class
 """
 import console
 from contextlib import contextmanager
