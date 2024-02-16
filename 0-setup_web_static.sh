@@ -5,7 +5,13 @@ sudo apt-get -y update
 sudo apt-get -y upgrade
 sudo apt-get -y install nginx
 sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
-echo "Hello, this is a test HTML file." | sudo tee /data/web_static/releases/test/index.html
+echo "<html>
+  <head>
+  </head>
+  <body>
+    Holberton School
+  </body>
+</html>" | sudo tee /data/web_static/releases/test/index.html
 sudo rm -rf /data/web_static/current
 sudo ln -s /data/web_static/releases/test/ /data/web_static/current
 sudo chown -R ubuntu:ubuntu /data/
